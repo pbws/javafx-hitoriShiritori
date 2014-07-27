@@ -7,7 +7,7 @@
             </patternLayout>
             <!--<thresholdFilter level="INFO" onMismatch="DENY" onMatch="ACCEPT" />-->
         </console>
-<!--        <file name="file" fileName="log/test.log">
+<!--        <file name="file" fileName="test.log">
             <PatternLayout>
                 <pattern>%msg%n</pattern>
             </PatternLayout>
