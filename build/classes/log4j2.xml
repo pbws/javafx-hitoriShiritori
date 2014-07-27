@@ -7,7 +7,7 @@
             </patternLayout>
             <!--<thresholdFilter level="INFO" onMismatch="DENY" onMatch="ACCEPT" />-->
         </console>
-<!--        <file name="file" fileName="test.log">
+<!--        <file name="file" fileName="log/test.log">
             <PatternLayout>
                 <pattern>%msg%n</pattern>
             </PatternLayout>
@@ -26,7 +26,7 @@
     <loggers>
         <logger name="test2" level="info" additivity="false" >
             <appender-ref ref="console" />
-            <appender-ref ref="rolling" />
+            <!--<appender-ref ref="rolling" />-->
         </logger>
         <root level="trace">
             <appender-ref ref="console" />

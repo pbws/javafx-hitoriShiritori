@@ -26,7 +26,7 @@
     <loggers>
         <logger name="test2" level="info" additivity="false" >
             <appender-ref ref="console" />
-            <appender-ref ref="rolling" />
+            <!--<appender-ref ref="rolling" />-->
         </logger>
         <root level="trace">
             <appender-ref ref="console" />
