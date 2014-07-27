@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <appenders>
+        <console name="console">
+            <patternLayout>
+                <pattern>%d{yyyy/MM/dd HH:mm:ss.SSS} %level{length=10} [%t]%l:%msg%n</pattern>
+            </patternLayout>
+            <!--<thresholdFilter level="INFO" onMismatch="DENY" onMatch="ACCEPT" />-->
+        </console>
+<!--        <file name="file" fileName="test.log">
+            <PatternLayout>
+                <pattern>%msg%n</pattern>
+            </PatternLayout>
+        </file>-->
+<!--        <rollingfile name="rolling" filename="log/roll.log" filepattern="log/roll-%d{yyyyMMdd}.%i.log">
+            <patternlayout>
+                <pattern>%d{yyyy/MM/dd HH:mm:ss.SSS} %level{length=1} %logger{36} [%t]: %msg%n</pattern>
+            </patternlayout>
+            <policies>
+                <timeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <sizeBasedTriggeringPolicy size="10 kb" />
+            </policies>
+            <defaultRolloverStrategy compressionLevel="0" max="4"/>
+        </rollingfile>-->
+    </appenders>
+    <loggers>
+        <logger name="test2" level="info" additivity="false" >
+            <appender-ref ref="console" />
+            <appender-ref ref="rolling" />
+        </logger>
+        <root level="trace">
+            <appender-ref ref="console" />
+            <!--<appender-ref ref="file" />-->
+        </root>
+    </loggers>
+</configuration>
