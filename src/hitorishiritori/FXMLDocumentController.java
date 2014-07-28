@@ -6,7 +6,8 @@
 package hitorishiritori;
 
 import java.net.URL;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,7 +31,7 @@ public class FXMLDocumentController implements Initializable {
     private TextField txtfInputWord;
 
     private Logger logger = LogManager.getLogger();
-    private String[] nextHeadWords;
+    private List<String> nextHeadWords;
 
     @FXML
     private void onClickReset(ActionEvent event) {
@@ -56,8 +57,11 @@ public class FXMLDocumentController implements Initializable {
             }
 
             if (!checkFlg) {
-
+                logger.info("Not Shiritori");
+            }else {
+                logger.info("OK Shiritori");
             }
+            
             //最後が「ん」だったらゲームオーバー
             if (word.substring(word.length() - 1, word.length()).equals("ん")) {
                 lblWord.setText("Game Over");
@@ -65,14 +69,14 @@ public class FXMLDocumentController implements Initializable {
             } else {
                 lblWord.setText(word);
                 txtfInputWord.clear();
-
+                
+                nextHeadWords.clear();
                 if (word.substring(word.length() - 1, word.length()).equals("ー")) {
-                    nextHeadWords = new String[10];
-                    nextHeadWords[0] = word.substring(word.length() - 2, word.length());
-                    nextHeadWords[1] = word.substring(word.length() -2 , word.length()-1);
+                    nextHeadWords.add(word.substring(word.length() - 2, word.length()));
+                    nextHeadWords.add(word.substring(word.length() -2 , word.length()-1));
                     //母音
                 } else {
-                    nextHeadWords[0] = word.substring(word.length()-1, word.length());
+                    nextHeadWords.add(word.substring(word.length()-1, word.length()));
                 }
                 String m = "";
                 for (String tmp : nextHeadWords) m += tmp +",";
@@ -83,7 +87,8 @@ public class FXMLDocumentController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        nextHeadWords = new String[]{"り"};
+        nextHeadWords = new ArrayList<>();
+        nextHeadWords.add("り");
     }
 
 }
