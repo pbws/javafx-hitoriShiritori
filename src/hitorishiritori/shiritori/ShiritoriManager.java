@@ -51,6 +51,7 @@ public class ShiritoriManager {
                     //拗音チェック
                     
                 }
+                //
                 break;
             case "ゃ":
             case "ゅ":
