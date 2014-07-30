@@ -115,6 +115,6 @@ public class ShiritoriManager {
     }
     
     private boolean isYouon(String c){
-        return "ぁぃぅぇぉゃゅょ".equals(c);
+        return "ぁぃぅぇぉゃゅょ".startsWith(c);
     }
 }
