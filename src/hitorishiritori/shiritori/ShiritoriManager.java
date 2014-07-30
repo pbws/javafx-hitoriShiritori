@@ -7,6 +7,7 @@
 package hitorishiritori.shiritori;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,8 +18,23 @@ public class ShiritoriManager {
     public enum CheckStatus { WORD_OK, HEAD_CHAR_NG, FOOT_CHAR_NG }
     
     private final List<String> nextHeadChars = new ArrayList<String>();
+    /*
+    0 = 長音NG
+    1 = 長音の母音
+    2 = 長音ごと
+    4 = 長音無視
+    */
     private int tyouonFlg;
+    /*
+    0 = 拗音NG
+    1 = 拗音の元字
+    2 = 拗音ごと
+    */
     private int youonFlg;
+    /*
+    0 = 濁音のみ
+    1 = 清音可
+    */
     private int dakuonFlg;
 
     public ShiritoriManager() {
@@ -42,28 +58,63 @@ public class ShiritoriManager {
     }
     
     private void setNextHeadChars(String word){
-        switch (word.substring(word.length() - 1, word.length())) {
-            case "ー":
-                if((tyouonFlg & 1) != 0){
-                    //母音を取得
+        nextHeadChars.clear();
+        
+        String lastChar = word.substring(word.length()-1, word.length());
+        if(isTyouon(lastChar)){
+            if((tyouonFlg & 1) != 0){
+                //長音の母音を取得する
+                String secChar = word.substring(word.length()-2, word.length()-1);
+                //secCharで母音マスタから検索する処理
+                String[] boin = {};
+                nextHeadChars.addAll(Arrays.asList(boin));
+            }
+            if((tyouonFlg & 2) != 0){
+                //長音ごと
+                String secChar = word.substring(word.length()-2, word.length()-1);
+                int sindex = 2;
+                if(isYouon(secChar)){
+                    //長音前が拗音の場合
+                    sindex = 3;
                 }
-                if((tyouonFlg & 2) != 0){
-                    //拗音チェック
-                    
+                String adChar = word.substring(word.length()-sindex, word.length());
+                nextHeadChars.add(adChar);
+                if(dakuonFlg == 1){
+                    //清音可の場合
+                    //sindex番目の文字の清音を取得する
+                    String seion = "";
+                    nextHeadChars.add(adChar.replaceFirst(adChar.substring(0, 1), seion));
                 }
-                //
-                break;
-            case "ゃ":
-            case "ゅ":
-            case "ょ":
-            case "ぁ":
-            case "ぃ":
-            case "ぅ":
-            case "ぇ":
-            case "ぉ":
-                break;
-            default:
-                
+            }
+            if((tyouonFlg & 4) != 0){
+                //長音無視
+                String secChar = word.substring(word.length()-2, word.length()-1);
+                int sindex = 2;
+                if(isYouon(secChar)){
+                    //長音前が拗音の場合
+                    sindex = 3;
+                }
+                String adChar = word.substring(word.length()-sindex, word.length()-1);
+                nextHeadChars.add(adChar);
+                if(dakuonFlg == 1){
+                    //清音可の場合
+                    //sindex番目の文字の清音を取得する
+                    String seion = "";
+                    nextHeadChars.add(adChar.replaceFirst(adChar.substring(0, 1), seion));
+                }
+            }
+        }else if(isYouon(lastChar)){
+            
+        }else {
+            
         }
+    }
+    
+    private boolean isTyouon(String c){
+        return c.equals("ー");
+    }
+    
+    private boolean isYouon(String c){
+        return "ぁぃぅぇぉゃゅょ".equals(c);
     }
 }
