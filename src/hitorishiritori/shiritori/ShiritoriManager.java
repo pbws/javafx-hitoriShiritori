@@ -9,6 +9,8 @@ package hitorishiritori.shiritori;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 /**
  *
@@ -60,45 +62,44 @@ public class ShiritoriManager {
     private void setNextHeadChars(String word){
         nextHeadChars.clear();
         
+        //語尾を抜き取る
         String lastChar = word.substring(word.length()-1, word.length());
         if(isTyouon(lastChar)){
-            //最後は長音の場合
+            //最後が長音の場合
             if((tyouonFlg & 1) != 0){
                 //長音の母音を取得する
                 String secChar = word.substring(word.length()-2, word.length()-1);
-                //secCharで母音マスタから検索する処理
+                //ここでsecCharで母音マスタから母音を取得する
                 String[] boin = {};
                 nextHeadChars.addAll(Arrays.asList(boin));
             }
-            if((tyouonFlg & 2) != 0){
-                //長音ごと
+            
+            //tyouonFlg=2,4用 拗音判定処理                     
+            IntConsumer fnc = flg -> {
                 String secChar = word.substring(word.length()-2, word.length()-1);
                 int sindex = 2;
-                if(isYouon(secChar)){
+                if (isYouon(secChar)) {
                     //長音前が拗音の場合
                     sindex = 3;
                 }
-                String adChar = word.substring(word.length()-sindex, word.length());
+                String adChar = word.substring(word.length() - sindex, word.length() - flg);
                 nextHeadChars.add(adChar);
                 this.addSeion(adChar);
+            };
+            
+            if((tyouonFlg & 2) != 0){
+                //長音ごと
+                fnc.accept(0);
             }
             if((tyouonFlg & 4) != 0){
                 //長音無視
-                String secChar = word.substring(word.length()-2, word.length()-1);
-                int sindex = 2;
-                if(isYouon(secChar)){
-                    //長音前が拗音の場合
-                    sindex = 3;
-                }
-                String adChar = word.substring(word.length()-sindex, word.length()-1);
-                nextHeadChars.add(adChar);
-                this.addSeion(adChar);
+                fnc.accept(1);
             }
         }else if(isYouon(lastChar)){
             //最後が拗音の場合
             if((youonFlg & 1) != 0){
                 //拗音の元字
-                //lastCharの元字を取得
+                //ここでlastCharの元字を取得
                 String motozi = "";
                 nextHeadChars.add(motozi);
             }
@@ -117,9 +118,13 @@ public class ShiritoriManager {
     }
     
     private void addSeion(String chars){
-        if(dakuonFlg == 1){
+        if (dakuonFlg == 1) {
+            //ここで清音マスタから清音を取得する
             String seion = "";
-            nextHeadChars.add(chars.replaceAll(chars.substring(0, 1), seion));
+            if (!chars.substring(0, 1).equals(seion)) {
+                //元が濁音の時だけ追加
+                nextHeadChars.add(chars.replaceAll(chars.substring(0, 1), seion));
+            }
         }
     }
     
