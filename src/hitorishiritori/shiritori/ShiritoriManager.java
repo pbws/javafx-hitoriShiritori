@@ -62,6 +62,7 @@ public class ShiritoriManager {
         
         String lastChar = word.substring(word.length()-1, word.length());
         if(isTyouon(lastChar)){
+            //最後は長音の場合
             if((tyouonFlg & 1) != 0){
                 //長音の母音を取得する
                 String secChar = word.substring(word.length()-2, word.length()-1);
@@ -79,12 +80,7 @@ public class ShiritoriManager {
                 }
                 String adChar = word.substring(word.length()-sindex, word.length());
                 nextHeadChars.add(adChar);
-                if(dakuonFlg == 1){
-                    //清音可の場合
-                    //sindex番目の文字の清音を取得する
-                    String seion = "";
-                    nextHeadChars.add(adChar.replaceFirst(adChar.substring(0, 1), seion));
-                }
+                this.addSeion(adChar);
             }
             if((tyouonFlg & 4) != 0){
                 //長音無視
@@ -96,17 +92,34 @@ public class ShiritoriManager {
                 }
                 String adChar = word.substring(word.length()-sindex, word.length()-1);
                 nextHeadChars.add(adChar);
-                if(dakuonFlg == 1){
-                    //清音可の場合
-                    //sindex番目の文字の清音を取得する
-                    String seion = "";
-                    nextHeadChars.add(adChar.replaceFirst(adChar.substring(0, 1), seion));
-                }
+                this.addSeion(adChar);
             }
         }else if(isYouon(lastChar)){
-            
+            //最後が拗音の場合
+            if((youonFlg & 1) != 0){
+                //拗音の元字
+                //lastCharの元字を取得
+                String motozi = "";
+                nextHeadChars.add(motozi);
+            }
+            if((youonFlg & 2) != 0){
+                //拗音ごと
+                String adChar = word.substring(word.length()-2, word.length());
+                nextHeadChars.add(adChar);
+                this.addSeion(adChar);
+            }
         }else {
-            
+            //長音でも拗音でもない場合
+            String adChar = word.substring(word.length()-1, word.length());
+            nextHeadChars.add(adChar);
+            this.addSeion(adChar);
+        }
+    }
+    
+    private void addSeion(String chars){
+        if(dakuonFlg == 1){
+            String seion = "";
+            nextHeadChars.add(chars.replaceAll(chars.substring(0, 1), seion));
         }
     }
     
