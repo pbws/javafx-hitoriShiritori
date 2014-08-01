@@ -6,20 +6,25 @@
 
 package hitorishiritori.shiritori;
 
+import hitorishiritori.database.dao.MstBoinDAO;
+import hitorishiritori.database.dao.MstSeionDAO;
+import hitorishiritori.database.dao.MstYouonDAO;
+import hitorishiritori.database.dao.ResultShiritoriDAO;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author sywatanabe
  */
 public class ShiritoriManager {
-    public enum CheckStatus { WORD_OK, HEAD_CHAR_NG, FOOT_CHAR_NG }
+    public enum CheckStatus { WORD_OK, HEAD_CHAR_NG, FOOT_CHAR_NG, WORD_NG }
     
-    private final List<String> nextHeadChars = new ArrayList<String>();
+    private Logger logger = LogManager.getLogger();
+    private final List<String> nextHeadChars = new ArrayList<>();
     /*
     0 = 長音NG
     1 = 長音の母音
@@ -40,22 +45,34 @@ public class ShiritoriManager {
     private int dakuonFlg;
 
     public ShiritoriManager() {
-        tyouonFlg = 1;
-        youonFlg = 1;
+        tyouonFlg = 7;
+        youonFlg = 3;
         dakuonFlg = 1;
     }
     
     public CheckStatus checkShiritori(String word) {
+        //頭文字チェック
         for (String hc : nextHeadChars) {
             if (word.substring(0, hc.length()).equals(hc)) {
+                break;
+            }
+            if(!nextHeadChars.iterator().hasNext()){
                 return CheckStatus.HEAD_CHAR_NG;
             }
         }
+        
+        //重複チェック
+        ArrayList<String> reswords = ResultShiritoriDAO.select(word, 0);
+        if(!reswords.isEmpty()){
+            return CheckStatus.WORD_NG;
+        }
+        //んチェック
         if (word.substring(word.length() - 1, word.length()).equals("ん")) {
             return CheckStatus.FOOT_CHAR_NG;
         }
+        //チェックをパスしたら次の頭文字を取得
         this.setNextHeadChars(word);
-
+        ResultShiritoriDAO.insert(word, 0);
         return CheckStatus.WORD_OK;
     }
     
@@ -69,9 +86,7 @@ public class ShiritoriManager {
             if((tyouonFlg & 1) != 0){
                 //長音の母音を取得する
                 String secChar = word.substring(word.length()-2, word.length()-1);
-                //ここでsecCharで母音マスタから母音を取得する
-                String[] boin = {};
-                nextHeadChars.addAll(Arrays.asList(boin));
+                MstBoinDAO.select(secChar).forEach( w -> {nextHeadChars.add(w);});
             }
             
             //tyouonFlg=2,4用 拗音判定処理                     
@@ -99,9 +114,7 @@ public class ShiritoriManager {
             //最後が拗音の場合
             if((youonFlg & 1) != 0){
                 //拗音の元字
-                //ここでlastCharの元字を取得
-                String motozi = "";
-                nextHeadChars.add(motozi);
+                MstYouonDAO.select(lastChar).forEach( w -> { nextHeadChars.add(w); });
             }
             if((youonFlg & 2) != 0){
                 //拗音ごと
@@ -119,12 +132,12 @@ public class ShiritoriManager {
     
     private void addSeion(String chars){
         if (dakuonFlg == 1) {
-            //ここで清音マスタから清音を取得する
-            String seion = "";
-            if (!chars.substring(0, 1).equals(seion)) {
-                //元が濁音の時だけ追加
-                nextHeadChars.add(chars.replaceAll(chars.substring(0, 1), seion));
-            }
+            MstSeionDAO.select(chars.substring(0, 1)).forEach( seion -> {
+                if (!chars.substring(0, 1).equals(seion)) {
+                    //元が濁音の時だけ追加
+                    nextHeadChars.add(chars.replaceAll(chars.substring(0, 1), seion));
+                }
+            });
         }
     }
     
