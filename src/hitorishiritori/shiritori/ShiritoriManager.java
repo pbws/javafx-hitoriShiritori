@@ -11,6 +11,7 @@ import hitorishiritori.database.dao.MstSeionDAO;
 import hitorishiritori.database.dao.MstYouonDAO;
 import hitorishiritori.database.dao.ResultShiritoriDAO;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.IntConsumer;
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +22,7 @@ import org.apache.logging.log4j.Logger;
  * @author sywatanabe
  */
 public class ShiritoriManager {
-    public enum CheckStatus { WORD_OK, HEAD_CHAR_NG, FOOT_CHAR_NG, WORD_NG }
+    public enum CheckStatus { WORD_OK, HEAD_CHAR_NG, FOOT_CHAR_NG, WORD_NG, }
     
     private Logger logger = LogManager.getLogger();
     private final List<String> nextHeadChars = new ArrayList<>();
@@ -50,13 +51,20 @@ public class ShiritoriManager {
         dakuonFlg = 1;
     }
     
+    public void initShiritori(String fastWord){
+        setNextHeadChars(fastWord);
+        ResultShiritoriDAO.deleteAll();
+    }
+    
     public CheckStatus checkShiritori(String word) {
         //頭文字チェック
-        for (String hc : nextHeadChars) {
-            if (word.substring(0, hc.length()).equals(hc)) {
+        Iterator<String> it = nextHeadChars.iterator();
+        while(true){
+            String hc = it.next();
+            if(word.substring(0, hc.length()).equals(hc)){
                 break;
             }
-            if(!nextHeadChars.iterator().hasNext()){
+            if(!it.hasNext()){
                 return CheckStatus.HEAD_CHAR_NG;
             }
         }
@@ -130,9 +138,9 @@ public class ShiritoriManager {
         }
     }
     
-    private void addSeion(String chars){
+    private void addSeion(String chars){    logger.debug("chars:" + chars);
         if (dakuonFlg == 1) {
-            MstSeionDAO.select(chars.substring(0, 1)).forEach( seion -> {
+            MstSeionDAO.select(chars.substring(0, 1)).forEach( seion -> {   logger.debug(seion);
                 if (!chars.substring(0, 1).equals(seion)) {
                     //元が濁音の時だけ追加
                     nextHeadChars.add(chars.replaceAll(chars.substring(0, 1), seion));
@@ -140,12 +148,16 @@ public class ShiritoriManager {
             });
         }
     }
+
+    public List<String> getNextHeadChars() {
+        return nextHeadChars;
+    }
     
     private boolean isTyouon(String c){
         return c.equals("ー");
     }
     
     private boolean isYouon(String c){
-        return "ぁぃぅぇぉゃゅょ".startsWith(c);
+        return "ぁぃぅぇぉゃゅょ".indexOf(c) > 0;
     }
 }

@@ -32,11 +32,18 @@ public class FXMLDocumentController implements Initializable {
     private TextField txtfInputWord;
 
     private Logger logger = LogManager.getLogger();
-    private final ShiritoriManager mng = new ShiritoriManager();
+    private final ShiritoriManager mng;
 
+    public FXMLDocumentController() {
+        mng = new ShiritoriManager();
+    }
+
+    
+    
     @FXML
     private void onClickReset(ActionEvent event) {
-        lblWord.setText("ひとりしりとり");
+        mng.initShiritori("ひとりしりとり");
+        settingWordLabel("ひとりしりとり");
         txtfInputWord.clear();
         txtfInputWord.setDisable(false);
         logger.info("リセット");
@@ -46,6 +53,11 @@ public class FXMLDocumentController implements Initializable {
     private void keyEventInputWord(KeyEvent event) {
         //エンターキーを押したら確定
         if (event.getCode() == KeyCode.ENTER) {
+            //空文字だったらイベントを無視する
+            if(txtfInputWord.getText().isEmpty()){
+                return;
+            }
+            
             String word = txtfInputWord.getText();
             CheckStatus sts =  mng.checkShiritori(word);
             switch(sts){
@@ -69,53 +81,30 @@ public class FXMLDocumentController implements Initializable {
                     break;
                 case WORD_OK:
                     logger.debug("OK");
-                    lblWord.setText(word);
+                    settingWordLabel(word);
                     txtfInputWord.clear();
                     break;
-                default:
-                    
+                default:       
             }
-//            boolean checkFlg = false;
-//
-//            //しりとりチェック
-//            for (String hw : nextHeadWords) {
-//                if (word.substring(0, hw.length()).equals(hw)) {
-//                    checkFlg = true;
-//                    break;
-//                }
-//            }
-//
-//            if (!checkFlg) {
-//                logger.info("Not Shiritori");
-//            }else {
-//                logger.info("OK Shiritori");
-//            }
-//            
-//            //最後が「ん」だったらゲームオーバー
-//            if (word.substring(word.length() - 1, word.length()).equals("ん")) {
-//                lblWord.setText("Game Over");
-//                txtfInputWord.setDisable(true);
-//            } else {
-//                lblWord.setText(word);
-//                txtfInputWord.clear();
-//                
-//                nextHeadWords.clear();
-//                if (word.substring(word.length() - 1, word.length()).equals("ー")) {
-//                    nextHeadWords.add(word.substring(word.length() - 2, word.length()));
-//                    nextHeadWords.add(word.substring(word.length() -2 , word.length()-1));
-//                    //母音
-//                } else {
-//                    nextHeadWords.add(word.substring(word.length()-1, word.length()));
-//                }
-//                String m = "";
-//                for (String tmp : nextHeadWords) m += tmp +",";
-//                logger.debug(m);
-//            }
         }
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        mng.initShiritori("ひとりしりとり");
+        settingWordLabel("ひとりしりとり");
     }
 
+    private void settingWordLabel(String word){
+        StringBuilder sb = new StringBuilder();
+        sb.setLength(0);
+        sb.append(word).append("[");
+        
+        mng.getNextHeadChars().forEach( c -> {
+            sb.append(c).append(",");
+        });
+        sb.deleteCharAt(sb.length()-1);
+        sb.append("]");
+        lblWord.setText(sb.toString());
+    }
 }
