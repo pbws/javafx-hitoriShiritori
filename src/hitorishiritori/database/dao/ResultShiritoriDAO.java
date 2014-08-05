@@ -30,7 +30,7 @@ public class ResultShiritoriDAO{
             Statement stmt = conn.createStatement();
             String sql = "select word from result_shiritori "
                     + " where mode_flg = " + mode_flg
-                    + ((word == null || word.isEmpty()) ? "" : " and word like '%" + word + "%' ");
+                    + ((word == null || word.isEmpty()) ? "" : " and word = '" + word + "' ");
             ResultSet result = stmt.executeQuery(sql);
             
             while(result.next()){
