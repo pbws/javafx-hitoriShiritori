@@ -72,7 +72,11 @@ public class ResultShiritoriDAO{
             result = stmt.executeUpdate(sql);
             conn.commit();
         } catch (SQLException ex){
-            
+            try {
+                conn.rollback();
+            } catch (SQLException ex1) {
+                
+            }
         }
         return result;
     }

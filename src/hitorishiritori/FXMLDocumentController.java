@@ -5,7 +5,6 @@
  */
 package hitorishiritori;
 
-import hitorishiritori.database.dao.ResultShiritoriDAO;
 import hitorishiritori.shiritori.ShiritoriManager;
 import hitorishiritori.shiritori.ShiritoriManager.CheckStatus;
 import java.net.URL;
@@ -38,8 +37,6 @@ public class FXMLDocumentController implements Initializable {
         mng = new ShiritoriManager();
     }
 
-    
-    
     @FXML
     private void onClickReset(ActionEvent event) {
         mng.initNewShiritori("ひとりしりとり");
@@ -53,38 +50,37 @@ public class FXMLDocumentController implements Initializable {
     private void keyEventInputWord(KeyEvent event) {
         //エンターキーを押したら確定
         if (event.getCode() == KeyCode.ENTER) {
+            //入力文字列から空白を除去する
+            String word = txtfInputWord.getText().replaceAll(" ", "").replaceAll("　", "");
+            
             //空文字だったら無視する
-            if(txtfInputWord.getText().isEmpty()){
+            if(word.isEmpty()){
+                txtfInputWord.clear();
                 return;
             }
             
-            String word = txtfInputWord.getText();
+            //しりとりの判定をする
             CheckStatus sts =  mng.checkShiritori(word);
             switch(sts){
                 case HEAD_CHAR_NG:
                     logger.debug("頭文字NG");
-                    lblWord.setText("Game Over");
-                    txtfInputWord.setDisable(true);
-                    ResultShiritoriDAO.deleteAll();
+                    this.gameOver();
                     break;
                 case WORD_NG:
                     logger.debug("重複NG");
-                    lblWord.setText("Game Over");
-                    txtfInputWord.setDisable(true);
-                    ResultShiritoriDAO.deleteAll();
+                    this.gameOver();
                     break;
                 case FOOT_CHAR_NG:
-                    logger.debug("んNG");
-                    lblWord.setText("Game Over");
-                    txtfInputWord.setDisable(true);
-                    ResultShiritoriDAO.deleteAll();
+                    logger.debug("尻文字NG");
+                    this.gameOver();
                     break;
                 case WORD_OK:
                     logger.debug("OK");
                     settingWordLabel(word);
                     txtfInputWord.clear();
                     break;
-                default:       
+                default:
+                    txtfInputWord.clear();
             }
         }
     }
@@ -92,13 +88,17 @@ public class FXMLDocumentController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         if(mng.isContinued()){
+            //前回のデータがあればそこから始める
             settingWordLabel(mng.initContinueShiritori());
         }else {
+            //新規
             mng.initNewShiritori("ひとりしりとり");
             settingWordLabel("ひとりしりとり");
         }
     }
-
+/*
+    Private Method
+*/
     private void settingWordLabel(String word){
         StringBuilder sb = new StringBuilder();
         sb.setLength(0);
@@ -111,5 +111,11 @@ public class FXMLDocumentController implements Initializable {
         sb.deleteCharAt(sb.length()-1);
         sb.append("]");
         lblWord.setText(sb.toString());
+    }
+    
+    private void gameOver(){
+        lblWord.setText("Game Over");
+        txtfInputWord.setDisable(true);
+        mng.reset();
     }
 }
