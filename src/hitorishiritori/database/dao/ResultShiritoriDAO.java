@@ -48,7 +48,8 @@ public class ResultShiritoriDAO{
         try {   
             Statement stmt = conn.createStatement();
             String sql = "select word from result_shiritori where mode_flg = " + mode_flg 
-                    + " order by id desc limit " + limit;
+                    + " order by id desc" 
+                    + (limit != 0 ? " limit " + limit : "");
             ResultSet result = stmt.executeQuery(sql);
             
             while(result.next()){

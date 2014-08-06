@@ -42,7 +42,7 @@ public class FXMLDocumentController implements Initializable {
     
     @FXML
     private void onClickReset(ActionEvent event) {
-        mng.initShiritori("ひとりしりとり");
+        mng.initNewShiritori("ひとりしりとり");
         settingWordLabel("ひとりしりとり");
         txtfInputWord.clear();
         txtfInputWord.setDisable(false);
@@ -53,7 +53,7 @@ public class FXMLDocumentController implements Initializable {
     private void keyEventInputWord(KeyEvent event) {
         //エンターキーを押したら確定
         if (event.getCode() == KeyCode.ENTER) {
-            //空文字だったらイベントを無視する
+            //空文字だったら無視する
             if(txtfInputWord.getText().isEmpty()){
                 return;
             }
@@ -91,8 +91,12 @@ public class FXMLDocumentController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        mng.initShiritori("ひとりしりとり");
-        settingWordLabel("ひとりしりとり");
+        if(mng.isContinued()){
+            settingWordLabel(mng.initContinueShiritori());
+        }else {
+            mng.initNewShiritori("ひとりしりとり");
+            settingWordLabel("ひとりしりとり");
+        }
     }
 
     private void settingWordLabel(String word){
@@ -103,6 +107,7 @@ public class FXMLDocumentController implements Initializable {
         mng.getNextHeadChars().forEach( c -> {
             sb.append(c).append(",");
         });
+        //余分なカンマを消す
         sb.deleteCharAt(sb.length()-1);
         sb.append("]");
         lblWord.setText(sb.toString());

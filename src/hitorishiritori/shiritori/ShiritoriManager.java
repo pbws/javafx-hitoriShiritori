@@ -51,9 +51,15 @@ public class ShiritoriManager {
         dakuonFlg = 1;
     }
     
-    public void initShiritori(String fastWord){
+    public void initNewShiritori(String fastWord){
         setNextHeadChars(fastWord);
         ResultShiritoriDAO.deleteAll();
+    }
+    
+    public String initContinueShiritori(){
+        String word = ResultShiritoriDAO.selectTop(1L, 0).get(0);
+        setNextHeadChars(word);
+        return word;
     }
     
     public CheckStatus checkShiritori(String word) {
@@ -82,6 +88,15 @@ public class ShiritoriManager {
         this.setNextHeadChars(word);
         ResultShiritoriDAO.insert(word, 0);
         return CheckStatus.WORD_OK;
+    }
+    
+    public boolean isContinued(){
+        List<String> lastWord = ResultShiritoriDAO.selectTop(0L, 0);
+        return !lastWord.isEmpty();
+    }
+    
+    public List<String> getNextHeadChars() {
+        return nextHeadChars;
     }
     
     private void setNextHeadChars(String word){
@@ -147,10 +162,6 @@ public class ShiritoriManager {
                 }
             });
         }
-    }
-
-    public List<String> getNextHeadChars() {
-        return nextHeadChars;
     }
     
     private boolean isTyouon(String c){
