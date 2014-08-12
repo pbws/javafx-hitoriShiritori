@@ -12,14 +12,26 @@
    <center>
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="lblWord" text="ひとりしりとり">
-               <padding>
-                  <Insets bottom="5.0" />
-               </padding>
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Label>
+            <HBox prefHeight="16.0" prefWidth="380.0">
+               <children>
+                  <Label fx:id="lblWord" text="ひとりしりとり">
+                     <padding>
+                        <Insets bottom="5.0" />
+                     </padding>
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblArrow" layoutX="10.0" layoutY="10.0" text=" ⇒">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="5.0" />
+                     </padding>
+                  </Label>
+               </children>
+            </HBox>
             <TextField fx:id="txtfInputWord" onKeyPressed="#keyEventInputWord">
                <VBox.margin>
                   <Insets bottom="5.0" />

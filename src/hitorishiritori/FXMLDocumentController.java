@@ -5,9 +5,9 @@
  */
 package hitorishiritori;
 
+import hitorishiritori.shiritori.ShiritoriManager;
+import hitorishiritori.shiritori.ShiritoriManager.CheckStatus;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -28,16 +28,24 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private Label lblWord;
     @FXML
+    private Label lblArrow;
+    @FXML
     private TextField txtfInputWord;
 
     private Logger logger = LogManager.getLogger();
-    private List<String> nextHeadWords;
+    private final ShiritoriManager mng;
+
+    public FXMLDocumentController() {
+        mng = new ShiritoriManager();
+    }
 
     @FXML
     private void onClickReset(ActionEvent event) {
-        lblWord.setText("ひとりしりとり");
+        mng.initNewShiritori("ひとりしりとり");
+        settingWordLabel("ひとりしりとり");
         txtfInputWord.clear();
         txtfInputWord.setDisable(false);
+        lblArrow.setVisible(true);
         logger.info("リセット");
     }
 
@@ -45,51 +53,73 @@ public class FXMLDocumentController implements Initializable {
     private void keyEventInputWord(KeyEvent event) {
         //エンターキーを押したら確定
         if (event.getCode() == KeyCode.ENTER) {
-            String word = txtfInputWord.getText();
-            boolean checkFlg = false;
-
-            //しりとりチェック
-            for (String hw : nextHeadWords) {
-                if (word.substring(0, hw.length()).equals(hw)) {
-                    checkFlg = true;
-                    break;
-                }
-            }
-
-            if (!checkFlg) {
-                logger.info("Not Shiritori");
-            }else {
-                logger.info("OK Shiritori");
+            //入力文字列から空白を除去する
+            String word = txtfInputWord.getText().replaceAll(" ", "").replaceAll("　", "");
+            
+            //空文字だったら無視する
+            if(word.isEmpty()){
+                txtfInputWord.clear();
+                return;
             }
             
-            //最後が「ん」だったらゲームオーバー
-            if (word.substring(word.length() - 1, word.length()).equals("ん")) {
-                lblWord.setText("Game Over");
-                txtfInputWord.setDisable(true);
-            } else {
-                lblWord.setText(word);
-                txtfInputWord.clear();
-                
-                nextHeadWords.clear();
-                if (word.substring(word.length() - 1, word.length()).equals("ー")) {
-                    nextHeadWords.add(word.substring(word.length() - 2, word.length()));
-                    nextHeadWords.add(word.substring(word.length() -2 , word.length()-1));
-                    //母音
-                } else {
-                    nextHeadWords.add(word.substring(word.length()-1, word.length()));
-                }
-                String m = "";
-                for (String tmp : nextHeadWords) m += tmp +",";
-                logger.debug(m);
+            //しりとりの判定をする
+            CheckStatus sts =  mng.checkShiritori(word);
+            switch(sts){
+                case HEAD_CHAR_NG:
+                    logger.debug("頭文字NG");
+                    this.gameOver();
+                    break;
+                case WORD_NG:
+                    logger.debug("重複NG");
+                    this.gameOver();
+                    break;
+                case FOOT_CHAR_NG:
+                    logger.debug("尻文字NG");
+                    this.gameOver();
+                    break;
+                case WORD_OK:
+                    logger.debug("OK");
+                    settingWordLabel(word);
+                    txtfInputWord.clear();
+                    break;
+                default:
+                    txtfInputWord.clear();
             }
         }
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        nextHeadWords = new ArrayList<>();
-        nextHeadWords.add("り");
-
+        if(mng.isContinued()){
+            //前回のデータがあればそこから始める
+            settingWordLabel(mng.initContinueShiritori());
+        }else {
+            //新規
+            mng.initNewShiritori("ひとりしりとり");
+            settingWordLabel("ひとりしりとり");
+        }
     }
-
+/*
+    Private Method
+*/
+    private void settingWordLabel(String word){
+        StringBuilder sb = new StringBuilder();
+        sb.setLength(0);
+        sb.append(word).append("[");
+        
+        mng.getNextHeadChars().forEach( c -> {
+            sb.append(c).append(",");
+        });
+        //余分なカンマを消す
+        sb.deleteCharAt(sb.length()-1);
+        sb.append("]");
+        lblWord.setText(sb.toString());
+    }
+    
+    private void gameOver(){
+        lblWord.setText("Game Over");
+        lblArrow.setVisible(false);
+        txtfInputWord.setDisable(true);
+        mng.reset();
+    }
 }
