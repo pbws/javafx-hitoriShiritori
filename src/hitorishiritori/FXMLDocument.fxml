@@ -22,7 +22,7 @@
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <Label layoutX="10.0" layoutY="10.0" text=" ⇒">
+                  <Label fx:id="lblArrow" layoutX="10.0" layoutY="10.0" text=" ⇒">
                      <font>
                         <Font size="20.0" />
                      </font>

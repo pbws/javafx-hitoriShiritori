@@ -28,6 +28,8 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private Label lblWord;
     @FXML
+    private Label lblArrow;
+    @FXML
     private TextField txtfInputWord;
 
     private Logger logger = LogManager.getLogger();
@@ -43,6 +45,7 @@ public class FXMLDocumentController implements Initializable {
         settingWordLabel("ひとりしりとり");
         txtfInputWord.clear();
         txtfInputWord.setDisable(false);
+        lblArrow.setVisible(true);
         logger.info("リセット");
     }
 
@@ -115,6 +118,7 @@ public class FXMLDocumentController implements Initializable {
     
     private void gameOver(){
         lblWord.setText("Game Over");
+        lblArrow.setVisible(false);
         txtfInputWord.setDisable(true);
         mng.reset();
     }
