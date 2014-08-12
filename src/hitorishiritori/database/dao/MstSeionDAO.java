@@ -35,6 +35,7 @@ public class MstSeionDAO {
                 res.add(result.getString("seion"));
             }
         } catch(SQLException ex){
+            logger.error("SQL例外",ex);
         }
         return res;
     }

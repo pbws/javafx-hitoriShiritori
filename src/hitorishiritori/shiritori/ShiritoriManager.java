@@ -11,6 +11,7 @@ import hitorishiritori.database.dao.MstSeionDAO;
 import hitorishiritori.database.dao.MstYouonDAO;
 import hitorishiritori.database.dao.ResultShiritoriDAO;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.IntConsumer;
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +22,7 @@ import org.apache.logging.log4j.Logger;
  * @author sywatanabe
  */
 public class ShiritoriManager {
-    public enum CheckStatus { WORD_OK, HEAD_CHAR_NG, FOOT_CHAR_NG, WORD_NG }
+    public enum CheckStatus { WORD_OK, HEAD_CHAR_NG, FOOT_CHAR_NG, WORD_NG, RETRY}
     
     private Logger logger = LogManager.getLogger();
     private final List<String> nextHeadChars = new ArrayList<>();
@@ -43,20 +44,39 @@ public class ShiritoriManager {
     1 = 清音可
     */
     private int dakuonFlg;
+    private boolean ngRetryFlg;
 
     public ShiritoriManager() {
         tyouonFlg = 7;
         youonFlg = 3;
         dakuonFlg = 1;
+        ngRetryFlg = false;
+    }
+    
+    public void initNewShiritori(String fastWord){
+        setNextHeadChars(fastWord);
+        this.reset();
+    }
+    
+    public String initContinueShiritori(){
+        String word = ResultShiritoriDAO.selectTop(1L, 0).get(0);
+        setNextHeadChars(word);
+        return word;
+    }
+    
+    public boolean reset(){
+        return ResultShiritoriDAO.delte(0) != -1;
     }
     
     public CheckStatus checkShiritori(String word) {
         //頭文字チェック
-        for (String hc : nextHeadChars) {
-            if (word.substring(0, hc.length()).equals(hc)) {
+        Iterator<String> it = nextHeadChars.iterator();
+        while(true){
+            String hc = it.next();
+            if(word.substring(0, hc.length()).equals(hc)){
                 break;
             }
-            if(!nextHeadChars.iterator().hasNext()){
+            if(!it.hasNext()){
                 return CheckStatus.HEAD_CHAR_NG;
             }
         }
@@ -66,9 +86,19 @@ public class ShiritoriManager {
         if(!reswords.isEmpty()){
             return CheckStatus.WORD_NG;
         }
-        //んチェック
-        if (word.substring(word.length() - 1, word.length()).equals("ん")) {
-            return CheckStatus.FOOT_CHAR_NG;
+        //尻文字チェック
+        String lastChar = word.substring(word.length() - 1, word.length());
+        if (lastChar.equals("ん")) {
+            //ん
+            return ngRetryFlg ? CheckStatus.RETRY : CheckStatus.FOOT_CHAR_NG;
+        }
+        if(isTyouon(lastChar) && (tyouonFlg == 0)){
+            //長音NG
+            return ngRetryFlg ? CheckStatus.RETRY : CheckStatus.FOOT_CHAR_NG;
+        }
+        if(isYouon(lastChar) && (youonFlg == 0)){
+            //拗音NG
+            return ngRetryFlg ? CheckStatus.RETRY : CheckStatus.FOOT_CHAR_NG;
         }
         //チェックをパスしたら次の頭文字を取得
         this.setNextHeadChars(word);
@@ -76,6 +106,17 @@ public class ShiritoriManager {
         return CheckStatus.WORD_OK;
     }
     
+    public boolean isContinued(){
+        List<String> lastWord = ResultShiritoriDAO.selectTop(0L, 0);
+        return !lastWord.isEmpty();
+    }
+    
+    public List<String> getNextHeadChars() {
+        return nextHeadChars;
+    }
+/*
+    Private Method
+*/
     private void setNextHeadChars(String word){
         nextHeadChars.clear();
         
@@ -130,9 +171,9 @@ public class ShiritoriManager {
         }
     }
     
-    private void addSeion(String chars){
+    private void addSeion(String chars){    logger.debug("chars:" + chars);
         if (dakuonFlg == 1) {
-            MstSeionDAO.select(chars.substring(0, 1)).forEach( seion -> {
+            MstSeionDAO.select(chars.substring(0, 1)).forEach( seion -> {   logger.debug(seion);
                 if (!chars.substring(0, 1).equals(seion)) {
                     //元が濁音の時だけ追加
                     nextHeadChars.add(chars.replaceAll(chars.substring(0, 1), seion));
@@ -146,6 +187,6 @@ public class ShiritoriManager {
     }
     
     private boolean isYouon(String c){
-        return "ぁぃぅぇぉゃゅょ".startsWith(c);
+        return "ぁぃぅぇぉゃゅょ".indexOf(c) > 0;
     }
 }

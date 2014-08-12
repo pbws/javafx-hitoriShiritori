@@ -30,7 +30,7 @@ public class ResultShiritoriDAO{
             Statement stmt = conn.createStatement();
             String sql = "select word from result_shiritori "
                     + " where mode_flg = " + mode_flg
-                    + ((word == null || word.isEmpty()) ? "" : " and word like '%" + word + "%' ");
+                    + ((word == null || word.isEmpty()) ? "" : " and word = '" + word + "' ");
             ResultSet result = stmt.executeQuery(sql);
             
             while(result.next()){
@@ -48,7 +48,8 @@ public class ResultShiritoriDAO{
         try {   
             Statement stmt = conn.createStatement();
             String sql = "select word from result_shiritori where mode_flg = " + mode_flg 
-                    + " order by id desc limit " + limit;
+                    + " order by id desc" 
+                    + (limit != 0 ? " limit " + limit : "");
             ResultSet result = stmt.executeQuery(sql);
             
             while(result.next()){
@@ -71,7 +72,11 @@ public class ResultShiritoriDAO{
             result = stmt.executeUpdate(sql);
             conn.commit();
         } catch (SQLException ex){
-            
+            try {
+                conn.rollback();
+            } catch (SQLException ex1) {
+                
+            }
         }
         return result;
     }
