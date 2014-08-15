@@ -17,6 +17,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,7 +26,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author ws
  */
-public class FXMLDocumentController implements Initializable {
+public class MainViewController implements Initializable {
 
     @FXML
     private Label lblWord;
@@ -35,13 +37,22 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private TextField txtfInputWord;
 
+    private Stage parent;
     private Logger logger = LogManager.getLogger();
     private final ShiritoriManager mng;
     private final ScoreManager scoreMng;
+    private double offsetX;
+    private double offsetY;
 
-    public FXMLDocumentController() {
+    public MainViewController() {
         mng = new ShiritoriManager();
         scoreMng = new ScoreManager();
+        offsetX = 0;
+        offsetY = 0;
+    }
+    
+    public void setParent(Stage parent){
+        this.parent = parent;
     }
 
     @FXML
@@ -95,6 +106,23 @@ public class FXMLDocumentController implements Initializable {
                     txtfInputWord.clear();
             }
         }
+    }
+    
+    @FXML
+    private void onClickClose(ActionEvent event){
+        parent.close();           
+    }
+    
+    @FXML
+    private void onMousePressedWindowMove(MouseEvent event){
+        offsetX = event.getSceneX();
+        offsetY = event.getSceneY();
+    }
+    
+    @FXML
+    private void onMouseDraggedWindowMove(MouseEvent event){
+        parent.setX(event.getScreenX()-offsetX);
+        parent.setY(event.getScreenY()-offsetY);
     }
 
     @Override
