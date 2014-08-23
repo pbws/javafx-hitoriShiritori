@@ -23,7 +23,7 @@ public class HitoriShiritori extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("MainView.fxml"));
         loader.load();
         
-        MainViewController cont = loader.getController();
+        MainController cont = loader.getController();
         cont.setParent(stage);
         
         Parent root = loader.getRoot();
@@ -31,7 +31,6 @@ public class HitoriShiritori extends Application {
         scene.setFill(null);
 
         stage.setScene(scene);
-        stage.setTitle("ひとりしりとり");
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.show();
     }

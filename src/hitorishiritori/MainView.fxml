@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" style="-fx-border-color: #999; -fx-background-radius: 0px 0px 11px 11px; -fx-border-radius: 0px 0px 11px 11px;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hitorishiritori.MainViewController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" style="-fx-border-color: #999; -fx-background-radius: 0px 0px 0px 0px; -fx-border-radius: 0px 0px 0px 0px;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hitorishiritori.MainController">
    <center>
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
@@ -59,23 +59,42 @@
       </VBox>
    </center>
    <top>
-      <HBox alignment="CENTER_RIGHT" onMouseDragged="#onMouseDraggedWindowMove" onMousePressed="#onMousePressedWindowMove" prefHeight="14.0" prefWidth="400.0" style="-fx-background-color: #fea; -fx-border-color: #999; -fx-border-width: 0 0 1px 0;" BorderPane.alignment="CENTER">
+      <VBox>
          <children>
-            <Button mnemonicParsing="false" onAction="#onClickClose" text="☓">
-               <font>
-                  <Font size="7.0" />
-               </font>
-            </Button>
+            <HBox alignment="CENTER" onMouseDragged="#onMouseDraggedWindowMove" onMousePressed="#onMousePressedWindowMove" style="-fx-background-color: #fea; -fx-border-width: 0px 0px 1px 0px; -fx-border-color: #999;">
+               <children>
+                  <Label prefHeight="15.0" prefWidth="278.0" text="ひとりしりとり" />
+                  <HBox alignment="CENTER_RIGHT" prefHeight="14.0" prefWidth="400.0" spacing="3.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#onClickMinimum" text="-">
+                           <font>
+                              <Font size="7.0" />
+                           </font>
+                        </Button>
+                        <Button layoutX="386.0" layoutY="13.0" mnemonicParsing="false" onAction="#onClickClose" text="☓">
+                           <font>
+                              <Font size="7.0" />
+                           </font>
+                        </Button>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <BorderPane.margin>
+                        <Insets />
+                     </BorderPane.margin>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="3.0" left="5.0" right="5.0" top="3.0" />
+               </padding>
+            </HBox>
+            <ToolBar prefHeight="40.0" prefWidth="200.0">
+              <items>
+                <Button mnemonicParsing="false" onAction="#onClickConfig" text="Button" />
+              </items>
+            </ToolBar>
          </children>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-         <padding>
-            <Insets bottom="3.0" left="5.0" right="5.0" top="3.0" />
-         </padding>
-      </HBox>
+      </VBox>
    </top>
 </BorderPane>

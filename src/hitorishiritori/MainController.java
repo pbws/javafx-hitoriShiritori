@@ -5,6 +5,8 @@
  */
 package hitorishiritori;
 
+import hitorishiritori.dialog.config.ConfigDialog;
+import hitorishiritori.dialog.message.MessageDialog;
 import hitorishiritori.shiritori.ScoreManager;
 import hitorishiritori.shiritori.ShiritoriManager;
 import hitorishiritori.shiritori.ShiritoriManager.CheckStatus;
@@ -26,7 +28,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author ws
  */
-public class MainViewController implements Initializable {
+public class MainController implements Initializable {
 
     @FXML
     private Label lblWord;
@@ -44,7 +46,7 @@ public class MainViewController implements Initializable {
     private double offsetX;
     private double offsetY;
 
-    public MainViewController() {
+    public MainController() {
         mng = new ShiritoriManager();
         scoreMng = new ScoreManager();
         offsetX = 0;
@@ -123,6 +125,21 @@ public class MainViewController implements Initializable {
     private void onMouseDraggedWindowMove(MouseEvent event){
         parent.setX(event.getScreenX()-offsetX);
         parent.setY(event.getScreenY()-offsetY);
+    }
+    
+    @FXML
+    private void onClickMinimum(ActionEvent event){
+        parent.setIconified(true);
+    }
+    
+    @FXML
+    private void onClickConfig(ActionEvent event){
+        ConfigDialog config = new ConfigDialog(parent.getScene().getWindow()).init();
+        if(config.showDialog()){
+            MessageDialog mes = new MessageDialog(parent.getScene().getWindow());
+            mes.init("設定の変更","設定の変更は、リセット後に反映されます。");
+            mes.showDialog();
+        }
     }
 
     @Override

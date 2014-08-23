@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package hitorishiritori.database.dao;
+package hitorishiritori.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
