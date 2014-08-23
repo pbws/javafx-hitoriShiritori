@@ -6,6 +6,7 @@
 
 package hitorishiritori.database.dao;
 
+import hitorishiritori.database.SQLiteDBManager;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

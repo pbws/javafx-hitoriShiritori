@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="320.0" spacing="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hitorishiritori.dialog.config.ConfigDialogController">
+   <children>
+      <Label text="設定">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <HBox alignment="BOTTOM_LEFT" prefHeight="0.0" prefWidth="600.0" spacing="10.0">
+         <children>
+            <Label text="長音">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <CheckBox fx:id="checkTyouon1" mnemonicParsing="false" text="母音" />
+            <CheckBox fx:id="checkTyouon2" mnemonicParsing="false" text="そのまま" />
+            <CheckBox fx:id="checkTyouon3" mnemonicParsing="false" text="無視" />
+         </children>
+      </HBox>
+      <Separator prefWidth="200.0" />
+      <HBox alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="0.0" prefWidth="600.0" spacing="10.0">
+         <children>
+            <Label text="拗音">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <CheckBox fx:id="checkYouon1" mnemonicParsing="false" text="清音" />
+            <CheckBox fx:id="checkYouon2" mnemonicParsing="false" text="そのまま" />
+         </children>
+      </HBox>
+      <Separator prefWidth="200.0" />
+      <HBox alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="26.0" prefHeight="0.0" prefWidth="600.0" spacing="10.0">
+         <children>
+            <Label text="濁音">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <RadioButton fx:id="radioDakuon1" mnemonicParsing="false" text="濁音のみ">
+               <toggleGroup>
+                  <ToggleGroup fx:id="dakuonConf" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="radioDakuon2" layoutX="34.0" layoutY="10.0" mnemonicParsing="false" text="清音可" toggleGroup="$dakuonConf" />
+         </children>
+      </HBox>
+      <Pane prefHeight="200.0" prefWidth="200.0" />
+      <HBox alignment="CENTER_RIGHT" layoutX="10.0" layoutY="42.0" prefHeight="0.0" prefWidth="600.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#onClickConfigSave" text="設定" />
+            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClickCancel" text="キャンセル" />
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</VBox>

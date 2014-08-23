@@ -15,8 +15,8 @@
         <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
             <name>HitoriShiritori</name>
             <source-roots>
+                <root id="src.lib_config.dir"/>
                 <root id="src.dir"/>
-                <root id="src.config.dir"/>
             </source-roots>
             <test-roots>
                 <root id="test.src.dir"/>

@@ -1,0 +1,11 @@
+#長音設定
+tyouon.boin=true
+tyouon.intact=true
+tyouon.ignore=true
+
+#拗音設定
+youon.seion=true
+youon.intact=true
+
+#濁音設定
+dakuon.seion=true

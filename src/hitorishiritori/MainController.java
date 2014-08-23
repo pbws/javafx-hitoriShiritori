@@ -5,6 +5,9 @@
  */
 package hitorishiritori;
 
+import hitorishiritori.dialog.config.ConfigDialog;
+import hitorishiritori.dialog.message.MessageDialog;
+import hitorishiritori.shiritori.ScoreManager;
 import hitorishiritori.shiritori.ShiritoriManager;
 import hitorishiritori.shiritori.ShiritoriManager.CheckStatus;
 import java.net.URL;
@@ -16,6 +19,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,25 +28,40 @@ import org.apache.logging.log4j.Logger;
  *
  * @author ws
  */
-public class FXMLDocumentController implements Initializable {
+public class MainController implements Initializable {
 
     @FXML
     private Label lblWord;
     @FXML
     private Label lblArrow;
     @FXML
+    private Label lblScore;
+    @FXML
     private TextField txtfInputWord;
 
+    private Stage parent;
     private Logger logger = LogManager.getLogger();
     private final ShiritoriManager mng;
+    private final ScoreManager scoreMng;
+    private double offsetX;
+    private double offsetY;
 
-    public FXMLDocumentController() {
+    public MainController() {
         mng = new ShiritoriManager();
+        scoreMng = new ScoreManager();
+        offsetX = 0;
+        offsetY = 0;
+    }
+    
+    public void setParent(Stage parent){
+        this.parent = parent;
     }
 
     @FXML
     private void onClickReset(ActionEvent event) {
         mng.initNewShiritori("ひとりしりとり");
+        scoreMng.resetScore();
+        lblScore.setText(String.format("%010d", scoreMng.getScore()));
         settingWordLabel("ひとりしりとり");
         txtfInputWord.clear();
         txtfInputWord.setDisable(false);
@@ -81,10 +101,44 @@ public class FXMLDocumentController implements Initializable {
                     logger.debug("OK");
                     settingWordLabel(word);
                     txtfInputWord.clear();
+                    scoreMng.addScore(word);
+                    lblScore.setText(String.format("%010d", scoreMng.getScore()));
                     break;
                 default:
                     txtfInputWord.clear();
             }
+        }
+    }
+    
+    @FXML
+    private void onClickClose(ActionEvent event){
+        parent.close();           
+    }
+    
+    @FXML
+    private void onMousePressedWindowMove(MouseEvent event){
+        offsetX = event.getSceneX();
+        offsetY = event.getSceneY();
+    }
+    
+    @FXML
+    private void onMouseDraggedWindowMove(MouseEvent event){
+        parent.setX(event.getScreenX()-offsetX);
+        parent.setY(event.getScreenY()-offsetY);
+    }
+    
+    @FXML
+    private void onClickMinimum(ActionEvent event){
+        parent.setIconified(true);
+    }
+    
+    @FXML
+    private void onClickConfig(ActionEvent event){
+        ConfigDialog config = new ConfigDialog(parent.getScene().getWindow()).init();
+        if(config.showDialog()){
+            MessageDialog mes = new MessageDialog(parent.getScene().getWindow());
+            mes.init("設定の変更","設定の変更は、リセット後に反映されます。");
+            mes.showDialog();
         }
     }
 
@@ -98,6 +152,8 @@ public class FXMLDocumentController implements Initializable {
             mng.initNewShiritori("ひとりしりとり");
             settingWordLabel("ひとりしりとり");
         }
+        scoreMng.initScore(0);
+        lblScore.setText(String.format("%010d", scoreMng.getScore()));
     }
 /*
     Private Method
@@ -121,5 +177,6 @@ public class FXMLDocumentController implements Initializable {
         lblArrow.setVisible(false);
         txtfInputWord.setDisable(true);
         mng.reset();
+        scoreMng.resetScore();
     }
 }
